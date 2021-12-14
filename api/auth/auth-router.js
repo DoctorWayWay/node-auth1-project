@@ -97,6 +97,24 @@ router.post("/login", validateUsername, validatePassword, async (req, res, next)
   }
  */
 
+router.get("/logout",
+  async (req, res, next) => { // eslint-disable-line
+    if (!req.session.user) {
+      res.status(200).json({ message: "no session" })
+    } else {
+      req.session.destroy(err => {
+        if (err) {
+          res.status(500).json({ message: "failed to logout" })
+        } else {
+          res.status(200).json({ message: "logged out" })
+        }
+      })
+    }
+  }
+)
+
+
+
 
 // Don't forget to add the router to the `exports` object so it can be required in other modules
 module.exports = router
