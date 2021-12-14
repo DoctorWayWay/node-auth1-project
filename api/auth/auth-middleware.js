@@ -1,4 +1,5 @@
 const Users = require("../users/users-model")
+const bcrypt = require("bcryptjs")
 /*
   If the user does not have a session saved in the server
 
@@ -79,10 +80,39 @@ function checkPasswordLength(req, res, next) {
   }
 }
 
+async function validateUsername(req, res, next) {
+  const { username } = req.body
+  const userFromDB = await Users.findByUsername(username)
+  if (!userFromDB) {
+    next({
+      message: "invalid credentials",
+      status: 401
+    })
+  } else {
+    next()
+  }
+}
+
+async function validatePassword(req, res, next) {
+  const { username, password } = req.body
+  const userFromDB = await Users.findByUsername(username)
+  const verifiedPassword = bcrypt.compareSync(password, userFromDB.password)
+  if (!verifiedPassword) {
+    next({
+      message: "invalid credentials",
+      status: 401
+    })
+  } else {
+    next()
+  }
+}
+
 // Don't forget to add these to the `exports` object so they can be required in other modules
 module.exports = {
   restricted,
   checkUsernameFree,
   checkUsernameExists,
   checkPasswordLength,
+  validateUsername,
+  validatePassword,
 }

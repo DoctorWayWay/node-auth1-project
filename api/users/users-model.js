@@ -30,7 +30,7 @@ async function findById(user_id) {
 
 async function findByUsername(username) {
   const [user] = await db("users")
-    .select("user_id", "username")
+    .select("user_id", "username", "password")
     .where({ username })
   return user
 }
